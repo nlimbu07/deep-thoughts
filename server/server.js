@@ -1,10 +1,11 @@
 const express = require('express');
 // import ApolloServer
 const { ApolloServer } = require('apollo-server-express');
-const { authMiddleware } = require('./utils/auth');
+const path = require('path');
 
 // import our typeDefs and resolvers
 const { typeDefs, resolvers } = require('./schemas');
+const { authMiddleware } = require('./utils/auth');
 const db = require('./config/connection');
 
 const PORT = process.env.PORT || 3001;
@@ -33,6 +34,16 @@ startServer();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
+// Serve up static assets
+if (process.env.NODE_ENV === 'production') { // check to see if the Node environment is in production
+  app.use(express.static(path.join(__dirname, '../client/build')));
+}
+
+// if we make a GET request to any location on the server that doesn't have an explicit route defined, respond with the production-ready React front-end code
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build/index.html'));
+});
 
 db.once('open', () => {
   app.listen(PORT, () => {
