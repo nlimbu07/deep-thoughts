@@ -5,7 +5,6 @@ import { useQuery } from '@apollo/client';
 import { QUERY_THOUGHTS } from '../utils/queries';
 
 const Home = () => {
-  // use useQuery hook to make query request
   const { loading, data } = useQuery(QUERY_THOUGHTS);
   const thoughts = data?.thoughts || [];
 
